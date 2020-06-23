@@ -1,8 +1,11 @@
 ## Overview
 
-Overpopulation is becoming a growing concern. However from 2010 to 2018, the population in the United States has only modestly increased a total of 6%, with an annual growth rate of less than one percent. 
-There are even some states with decreasing populations. Instead of worrying about overpopulation, Americans should be concerned with the age distribution of the population. With advances in technology and medical breakthroughs, people are living longer lives and that will have longterm impacts on population trends. 
-This is going to have different impacts on different states. In 2010 in Vermont people 54 and older made up 30.13% of the total population, but eight years later in 2018 they were 35.03% of the population. 
+Overpopulation is becoming a growing concern. However from 2010 to 2018, the population in the United States has only modestly increased a total of 6%, with an annual growth rate of less than one percent. There are even some states with decreasing populations.
+<p align="center"> 
+  <img src="https://github.com/rajancutting/leslie-population/blob/master/United%20States.png">
+ </p>
+ 
+Americans should be concerned with the age distribution of the population, though. With advances in technology and medical breakthroughs, people are living longer and that will have different longterm impacts on each state . In 2010 in Vermont people 54 and older made up 30.13% of the total population, but eight years later in 2018 they were 35.03% of the population. 
 In comparison people under the age of 18 were 19.27% of the population in 2010 and 17.36% by 2018. There are fewer young people in Vermont, and that has already led to schools closing. 
 
 Understanding age distribution in a state’s population is critical to analyze its future economic prospects and societal life. The purpose of this project is to take a closer look at age distribution in the United States. 
