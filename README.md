@@ -37,6 +37,34 @@ The population data from 2010 to 2018 is broken down by age and is reported by t
 The death data used to calculate the survival rates is 2007 data from the CDC. The fertility rates are user inputs. 
 One of the goals of this project is to measure how varying birth rates change the outlook for future population trends, so that is partly why I chose to have birth rates be user inputs.
 
+## Results
+The model assumed that only women between the ages of 13 and 48 can give birth. Then the fertility was broken down into age clusters with corresponding fertility rates. 
+
+<table style="width:100%">
+  <tr>
+    <th> Ages 13-18 </th>
+    <th> Ages 19-24 </th>
+    <th> Ages 25-30 </th>
+    <th> Ages 31-36 </th>
+    <th> Ages 37-42 </th>
+    <th> Ages 43-48 </th>
+ </tr>
+ <tr>
+   <td> 0.05% </td>
+   <td> 6.0% </td>
+   <td> 9.0% </td>
+   <td> 8.0% </td>
+   <td> 7.0% </td>
+   <td> 0.075% </td>
+ </tr>
+ </table>
+
+With these birth rates, states will continue the same population trend. The model predicts that the states that had decreasing populations in 2018 will continue to see a downard trend in births and an increasing share of older people. Some of the results are shown below.
+
+<p align="center">
+  <img src="https://github.com/rajancutting/leslie-population/blob/master/visuals/future_trend_head.png">
+</p>
+
 ## Future Work
 There are a few things that I want to continue adding to this project. 
 
