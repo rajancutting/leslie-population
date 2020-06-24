@@ -12,24 +12,21 @@ population growth that this model does not currently include.
 import csv
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from matplotlib import rcParams
+import statistics
 
 df = pd.read_csv('population.csv')
 
 D = pd.read_csv('death_rates.csv') #2007 death rates
 P = pd.read_csv('population.csv') #Population from 2010 to 2018
 
-print("NO spaces or percent sign. Input 5% as .05")
-r1 = float(input('What perfect of women aged 13-18 get pregnant?: '))
-r2 = float(input('What perfect of women aged 19-24 have children?: '))
-r3 = float(input('What perfect of women aged 25-30 have children?: '))
-r4 = float(input('What perfect of women aged 31-36 have children?: '))
-r5 = float(input('What perfect of women aged 37-42 have children?: '))
-r6 = float(input('What perfect of women aged 43-48 have children?: '))
 
 #The corresponding future-pop-estimate csv used the following inputs
 #[0.005,.06,.09,.08,.07,.0075]
 
-BR = [r1,r2,r3,r4,r5,r6]
+
 
 class State:
     def __init__(self,name):
@@ -179,6 +176,14 @@ class State:
             forecast --> integer
 
         """
+        print("NO spaces or percent sign. Input 5% as .05")
+        r1 = float(input('What perfect of women aged 13-18 get pregnant?: '))
+        r2 = float(input('What perfect of women aged 19-24 have children?: '))
+        r3 = float(input('What perfect of women aged 25-30 have children?: '))
+        r4 = float(input('What perfect of women aged 31-36 have children?: '))
+        r5 = float(input('What perfect of women aged 37-42 have children?: '))
+        r6 = float(input('What perfect of women aged 43-48 have children?: '))
+        BR = [r1,r2,r3,r4,r5,r6]
 
         pop = self.population(year,sex)['population']
 
@@ -235,6 +240,137 @@ class State:
         data = [self.name,current_pop,one,two,three,four,five,six,seven,eight,nine,ten]
         return data
 
+    def make_plots(self,year1,year2,sex):
+        info1 = self.population(year1,sex)
+        pop_year1 = info1['population']
+        age_year1 = info1['ages']
+        pop_year1 = [y*.001 for y in pop_year1]
+
+        info2 = self.population(year2,sex)
+        pop_year2 = info2['population']
+        age_year2 = info2['ages']
+
+        pop_year2 = [y*.001 for y in pop_year2]
+
+        if len(pop_year1) > len(pop_year2):
+            diff = len(pop_year1) - len(pop_year2)
+            for i in range(diff):
+                pop_year2.append(0)
+                last = pop_age2[-1]
+                pop_age2.append(last+i+1)
+        if len(pop_year2) > len(pop_year1):
+            diff = len(pop_year2) - len(pop_year1)
+            for i in range(diff):
+                pop_year1.append(0)
+
+        plt.plot(age_year2,pop_year1,label = "{} population".format(year1))
+        plt.plot(age_year2,pop_year2,label = "{} population".format(year2))
+
+        plt.title("{} {} population vs. {} population".format(self.name,year1,year2))
+        plt.ylabel("Population in thousands")
+        plt.legend()
+        plt.minorticks_on()
+        plt.grid(which="minor",linestyle=":",linewidth="0.5")
+        #plt.grid(which='major', linestyle='-', linewidth='0.5', color='red')
+        #plt.yaxis.set_ticks(np.arrange(start,end,50))
+        #ax.xaxis.set_ticks(np.arange(start, end, 0.712123))
+        plt.savefig('visuals/state_graph/{}.png'.format(self.name))
+        #plt.show()
+
+    def growth_rate(self,year1,year2):
+        pop1 = self.population(year1,0)['total']
+        pop2 = self.population(year2,0)['total']
+
+        start = pop1
+        end = pop2
+        time = int(year2) -int(year1)
+        rate = (np.log(end)-np.log(start))/time
+
+        #print("growth rate " + str(rate))
+
+        return rate
+
+    def avg_age(self,year,sex):
+        info = self.population(year,sex)
+        pop = info['population']
+        ages = info['ages']
+
+        avg_list = pop[:]
+        total = info['total']
+        for i in range(1,len(avg_list)):
+            avg_list[i] = avg_list[i] * ages[i]
+        sum_list = sum(avg_list)
+        len_list = len(avg_list)
+        avg = round(sum_list/total)
+        #print("the average age:",avg)
+        return avg
+
+    def median_age(self,year,sex):
+
+        info = self.population(year,sex)
+
+        pop = info['population']
+        ages = info['ages']
+
+        construct_age = []
+        for i in range(0,len(ages)):
+            add_age = [ages[i]]*pop[i]
+            construct_age.extend(add_age)
+        median = statistics.median(construct_age)
+        #print("The median age:",median)
+        return median
+
+    def quintile(self,year,sex):
+
+        info = self.population(year,sex)
+        pop = info['population']
+        total_pop =info['total']
+        first_group = sum(pop[0:17])/total_pop * 100
+        second_group = sum(pop[18:35])/total_pop * 100
+        third_group = sum(pop[36:53])/total_pop * 100
+        fourth_group = sum(pop[54:71])/total_pop * 100
+        fifth_group = sum(pop[72:])/total_pop * 100
+        obj = [round(first_group,2), round(second_group,2), round(third_group,2), round(fourth_group,2),round(fifth_group,2)]
+        #print ("quintile:",obj)
+        return obj
+
+    def plot_quintiles(self,year1,year2,sex):
+
+        y0 = self.quintile(year1,sex)
+        y1 = self.quintile(year2,sex)
+
+        max0 = max(y0)
+        max1 = max(y1)
+        true_max = max(max0,max1)
+        labels = ['0-17','18-35','36-53','54-71','72+']
+        x = np.arange(len(labels))
+        width = 0.35
+
+        fig, ax = plt.subplots()
+        rects1 = ax.bar(x - width/2, y0, width, label=year1)
+        rects2 = ax.bar(x + width/2, y1, width, label=year2)
+
+        ax.set_ylabel('Share of Population %')
+        ax.set_title('{} Population Distribution'.format(self.name))
+        ax.set_xticks(x)
+        ax.set_xticklabels(labels)
+        ax.legend()
+        plt.ylim(top=true_max+6)
+
+        stuff = [rects1,rects2]
+        for rect in stuff:
+            for rec in rect:
+                height = rec.get_height()
+                ax.annotate('{}'.format(height),
+                            xy=(rec.get_x() + rec.get_width() / 2, height),
+                            xytext=(0, 3),  # 3 points vertical offset
+                            textcoords="offset points",
+                            ha='center', va='bottom')
+
+        #graph = plt.plot(x,y0)
+        plt.savefig('visuals/quintile/{}_quintile'.format(self.name))
+        #plt.show()
+
 def create_df():
     all_states = set(P['NAME'].to_list())
 
@@ -246,5 +382,15 @@ def create_df():
         df.loc[len(df)] = state_obj.future()
     df.to_csv('future-pop-estimate.csv')
 
+#vt = State('Vermont')
+#quintile = vt.plot_quintiles('2010','2018',0)
 
-create_df()
+
+def make_quin():
+    all_states = set(P['NAME'].to_list())
+
+    for state in all_states:
+        print(state)
+        state_obj = State(state)
+        state_obj.make_plots('2010','2018',0)
+make_quin()
