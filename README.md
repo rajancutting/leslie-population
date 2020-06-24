@@ -5,8 +5,11 @@ Overpopulation is becoming a growing concern. However from 2010 to 2018, the pop
   <img src="https://github.com/rajancutting/leslie-population/blob/master/United%20States.png">
  </p>
  
-Americans should be concerned with the age distribution of the population, though. With advances in technology and medical breakthroughs, people are living longer and that will have different longterm impacts on each state . In 2010 in Vermont people 54 and older made up 30.13% of the total population, but eight years later in 2018 they were 35.03% of the population. 
+Instead of overpopulation, Americans should be concerned with the changing age distribution of the population. With advances in technology and medical breakthroughs, people are living longer and are also choosing to have less children. These factors will have different longterm impacts on each state. In 2010 in Vermont people 54 and older made up 30.13% of the total population, but eight years later in 2018 they were 35.03% of the population. 
 In comparison people under the age of 18 were 19.27% of the population in 2010 and 17.36% by 2018. There are fewer young people in Vermont, and that has already led to schools closing. 
+<p align="center">
+   <img src="https://github.com/rajancutting/leslie-population/blob/master/visuals/quintile/Vermont_quintile.png">
+ </p>
 
 Understanding age distribution in a state’s population is critical to analyze its future economic prospects and societal life. The purpose of this project is to take a closer look at age distribution in the United States. 
 Then using the Leslie Model, this project forecasts future population growth with varying birth rates. 
@@ -38,8 +41,12 @@ One of the goals of this project is to measure how varying birth rates change th
 There are a few things that I want to continue adding to this project. 
 
 Migration — I want to fact in total migration to my model. 
-Especially in the Northeast there’s a clear trend of a peak in college-aged young people and then a drop off in older ages. 
-It is clear that many students are moving to different states after graduation, and that should be taken into account. 
+In some states there is a clear trend of a peak in college-aged young people and then a drop off in older ages.  
+It is clear that many students are attending college in these states and then leaving after graduation. I want to account for a total migration 
+factor by looking at the excess decrease in population age classes that are not attributed to deaths.
+<p align="center">
+  <img src="https://github.com/rajancutting/leslie-population/blob/master/visuals/state_graph/Vermont.png">
+</p>
 
 Possible births - Right now the model accounts for a one-dimensional outlook on fertility. The user is prompted to input the percentage
 of women in a specific age category that are going to have children, but in reality it is more complicated than that. 
