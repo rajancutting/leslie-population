@@ -12,6 +12,7 @@ population growth that this model does not currently include.
 import csv
 import pandas as pd
 import numpy as np
+import six
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from matplotlib import rcParams
@@ -21,10 +22,6 @@ df = pd.read_csv('population.csv')
 
 D = pd.read_csv('death_rates.csv') #2007 death rates
 P = pd.read_csv('population.csv') #Population from 2010 to 2018
-
-
-#The corresponding future-pop-estimate csv used the following inputs
-#[0.005,.06,.09,.08,.07,.0075]
 
 
 
@@ -165,7 +162,7 @@ class State:
 
         return {'existing_list':existing_humans,'existing_count':total}
 
-    def new_births(self,year,sex,forecast):
+    def new_births(self,year,sex,forecast,BR):
         """
         Using inputted birth rates this function calculates new births. Consistent with
         Leslie matrices, only women are passed into the sex argument.
@@ -176,14 +173,7 @@ class State:
             forecast --> integer
 
         """
-        print("NO spaces or percent sign. Input 5% as .05")
-        r1 = float(input('What perfect of women aged 13-18 get pregnant?: '))
-        r2 = float(input('What perfect of women aged 19-24 have children?: '))
-        r3 = float(input('What perfect of women aged 25-30 have children?: '))
-        r4 = float(input('What perfect of women aged 31-36 have children?: '))
-        r5 = float(input('What perfect of women aged 37-42 have children?: '))
-        r6 = float(input('What perfect of women aged 43-48 have children?: '))
-        BR = [r1,r2,r3,r4,r5,r6]
+
 
         pop = self.population(year,sex)['population']
 
@@ -216,7 +206,8 @@ class State:
 
     def new_pop(self,exist,births):
         return(exist+births)
-    def future(self):
+
+    def future(self,BR):
         """
         This function returns a list of population estimates. The first entry is the state name
         then the second is the 2018 information. Everything after that is estimated.
@@ -226,16 +217,16 @@ class State:
         # The row that will be added to the DF
 
         current_pop = self.population("2018",0)['total']
-        one = self.new_pop(self.existing("2018",0,1)['existing_count'] , self.new_births("2018",2,1))
-        two = self.new_pop(self.existing("2018",0,2)['existing_count'] , self.new_births("2018",2,2))
-        three = self.new_pop(self.existing("2018",0,3)['existing_count'] , self.new_births("2018",2,3))
-        four = self.new_pop(self.existing("2018",0,4)['existing_count'] , self.new_births("2018",2,4))
-        five = self.new_pop(self.existing("2018",0,5)['existing_count'] , self.new_births("2018",2,5))
-        six = self.new_pop(self.existing("2018",0,6)['existing_count'] , self.new_births("2018",2,6))
-        seven = self.new_pop(self.existing("2018",0,7)['existing_count'] , self.new_births("2018",2,7))
-        eight = self.new_pop(self.existing("2018",0,8)['existing_count'] , self.new_births("2018",2,8))
-        nine = self.new_pop(self.existing("2018",0,9)['existing_count'] , self.new_births("2018",2,9))
-        ten = self.new_pop(self.existing("2018",0,10)['existing_count'] , self.new_births("2018",2,10))
+        one = self.new_pop(self.existing("2018",0,1)['existing_count'] , self.new_births("2018",2,1,BR))
+        two = self.new_pop(self.existing("2018",0,2)['existing_count'] , self.new_births("2018",2,2,BR))
+        three = self.new_pop(self.existing("2018",0,3)['existing_count'] , self.new_births("2018",2,3,BR))
+        four = self.new_pop(self.existing("2018",0,4)['existing_count'] , self.new_births("2018",2,4,BR))
+        five = self.new_pop(self.existing("2018",0,5)['existing_count'] , self.new_births("2018",2,5,BR))
+        six = self.new_pop(self.existing("2018",0,6)['existing_count'] , self.new_births("2018",2,6,BR))
+        seven = self.new_pop(self.existing("2018",0,7)['existing_count'] , self.new_births("2018",2,7,BR))
+        eight = self.new_pop(self.existing("2018",0,8)['existing_count'] , self.new_births("2018",2,8,BR))
+        nine = self.new_pop(self.existing("2018",0,9)['existing_count'] , self.new_births("2018",2,9,BR))
+        ten = self.new_pop(self.existing("2018",0,10)['existing_count'] , self.new_births("2018",2,10,BR))
 
         data = [self.name,current_pop,one,two,three,four,five,six,seven,eight,nine,ten]
         return data
@@ -263,11 +254,12 @@ class State:
             for i in range(diff):
                 pop_year1.append(0)
 
-        plt.plot(age_year2,pop_year1,label = "{} population".format(year1))
-        plt.plot(age_year2,pop_year2,label = "{} population".format(year2))
+        plot = plt.plot(age_year2,pop_year1,label = "{} population".format(year1))
+        plot = plt.plot(age_year2,pop_year2,label = "{} population".format(year2))
 
         plt.title("{} {} population vs. {} population".format(self.name,year1,year2))
         plt.ylabel("Population in thousands")
+        plt.xlabel("Ages")
         plt.legend()
         plt.minorticks_on()
         plt.grid(which="minor",linestyle=":",linewidth="0.5")
@@ -275,7 +267,8 @@ class State:
         #plt.yaxis.set_ticks(np.arrange(start,end,50))
         #ax.xaxis.set_ticks(np.arange(start, end, 0.712123))
         plt.savefig('visuals/state_graph/{}.png'.format(self.name))
-        #plt.show()
+
+        plt.show()
 
     def growth_rate(self,year1,year2):
         pop1 = self.population(year1,0)['total']
@@ -351,6 +344,7 @@ class State:
         rects2 = ax.bar(x + width/2, y1, width, label=year2)
 
         ax.set_ylabel('Share of Population %')
+        ax.set_xlabel('Age groups')
         ax.set_title('{} Population Distribution'.format(self.name))
         ax.set_xticks(x)
         ax.set_xticklabels(labels)
@@ -373,24 +367,59 @@ class State:
 
 def create_df():
     all_states = set(P['NAME'].to_list())
-
+    #some_states = list(all_states)[:6]
+    some_states = ['Vermont','Kansas','Hawaii','Kentucky','Idaho','Arkansas']
     df = pd.DataFrame(columns=['States','2018_pop','2019_pop','2020_pop','2021_pop','2022_pop','2023_pop','2024_pop','2025_pop','2026_pop','2027_pop','2028_pop'])
-
-    for state in all_states:
+    print("NO spaces or percent sign. Input 5% as .05")
+    r1 = float(input('What perfect of women aged 13-18 get pregnant?: '))
+    r2 = float(input('What perfect of women aged 19-24 have children?: '))
+    r3 = float(input('What perfect of women aged 25-30 have children?: '))
+    r4 = float(input('What perfect of women aged 31-36 have children?: '))
+    r5 = float(input('What perfect of women aged 37-42 have children?: '))
+    r6 = float(input('What perfect of women aged 43-48 have children?: '))
+    BR = [r1,r2,r3,r4,r5,r6]
+    for state in some_states:
         print(state)
         state_obj = State(state)
-        df.loc[len(df)] = state_obj.future()
-    df.to_csv('future-pop-estimate.csv')
+        df.loc[len(df)] = state_obj.future(BR)
+    #df.to_csv('future-pop-estimate.csv')
+    del df['2019_pop'],df['2021_pop'],df['2023_pop'],df['2025_pop'],df['2027_pop']
 
-#vt = State('Vermont')
-#quintile = vt.plot_quintiles('2010','2018',0)
+    return df
 
 
 def make_quin():
-    all_states = set(P['NAME'].to_list())
-
+    #all_states = set(P['NAME'].to_list())
     for state in all_states:
         print(state)
         state_obj = State(state)
         state_obj.make_plots('2010','2018',0)
-make_quin()
+
+
+#Styling function taken from stack overflow 
+def render_mpl_table(data, col_width=7.0, row_height=0.625, font_size=14,
+                     header_color='#40466e', row_colors=['#f1f1f2', 'w'], edge_color='w',
+                     bbox=[0, 0, 1, 1], header_columns=0,loc="center",
+                     ax=None, **kwargs):
+    if ax is None:
+        size = (np.array(data.shape[::-1]) + np.array([0, 4])) * np.array([col_width, row_height])
+        fig, ax = plt.subplots(figsize=size)
+        ax.axis('off')
+
+    mpl_table = ax.table(cellText=data.values, bbox=bbox, colLabels=data.columns, **kwargs)
+
+    mpl_table.auto_set_font_size(False)
+    mpl_table.set_fontsize(font_size)
+
+    for k, cell in six.iteritems(mpl_table._cells):
+        cell.set_edgecolor(edge_color)
+
+        if k[0] == 0 or k[1] < header_columns:
+            cell.set_text_props(weight='bold', color='w')
+            cell.set_facecolor(header_color)
+        else:
+            cell.set_facecolor(row_colors[k[0]%len(row_colors) ])
+
+    plt.show()
+    print('figure saved')
+    return ax
